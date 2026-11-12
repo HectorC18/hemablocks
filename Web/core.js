@@ -8,7 +8,7 @@ const HB = (() => {
   };
   const S = { done: new Set(LS.get('hb-done', [])), xp: LS.get('hb-xp', 0), streak: 0,
               bestStreak: LS.get('hb-best-streak', 0), days: LS.get('hb-days', 0), lastDay: LS.get('hb-last-day', null),
-              quick: LS.get('hb-quick', false), current: LS.get('hb-current', 'm1') };
+              quick: LS.get('hb-quick', false), current: LS.get('hb-current', 'x-p1') };
 
   // ---------- utilidades
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -41,7 +41,7 @@ const HB = (() => {
 
   function renderBar() {
     const bar = document.getElementById('bar');
-    const total = D.missions ? D.missions.length : 36;
+    const total = D.missions ? D.missions.length : 6;
     bar.innerHTML = `
       <a class="brand" href="#/"><svg class="cube" viewBox="0 0 30 30"><polygon points="15,3 27,10 15,17 3,10" fill="#E46A85"/><polygon points="3,10 15,17 15,28 3,21" fill="#C4234A"/><polygon points="27,10 15,17 15,28 27,21" fill="#8F1734"/></svg>HemaBlocks</a>
       <span class="pill"><b>${S.done.size}</b>/${total}</span>
@@ -49,15 +49,13 @@ const HB = (() => {
       <span class="pill">XP <b>${S.xp}</b></span>
       <span class="pill">Racha <b>${S.streak}</b></span>
       <span class="pill">${S.days} ${S.days === 1 ? 'día' : 'días'}</span>
-      <span class="grow"></span>
-      <button class="chip ${S.quick ? 'sel' : ''}" id="quick">Vista rápida</button>`;
-    document.getElementById('quick').onclick = () => { S.quick = !S.quick; LS.set('hb-quick', S.quick); route(); };
+      <span class="grow"></span>`;
   }
 
   // ---------- inicio
   function home() {
     const app = document.getElementById('app');
-    let html = `<h1>Hematología por misiones</h1><p class="muted">Elige una misión. Las pruebas <span class="star">★</span> tienen nota (escala chilena al 60 %).</p>`;
+    let html = `<h1>Pruebas y certámenes de hematología</h1><p class="muted">Elige una prueba. Cada intento sortea preguntas nuevas y entrega la nota (escala chilena al 60 %) con la explicación de cada error.</p>`;
     let open = false;
     D.missions.forEach((m, i) => {
       if (m.group) { if (open) html += '</div>'; html += `<div class="group-h">${esc(m.group)}</div><div class="grid">`; open = true; }
@@ -144,13 +142,15 @@ const HB = (() => {
   }
 
   async function start() {
-    const names = ['missions', 'exams', 'flashcards', 'quiz', 'pathology', 'cells', 'clues', 'sorting', 'sequences', 'frotis', 'informes', 'aml'];
+    const names = ['missions', 'exams'];
     try {
       await Promise.all(names.map(async n => { D[n] = await (await fetch('data/' + n + '.json')).json(); }));
     } catch (e) {
       document.getElementById('app').innerHTML = '<div class="panel">No se pudieron cargar los datos. Abre la página desde internet (no como archivo) y vuelve a intentar.</div>';
       return;
     }
+    D.missions = D.missions.filter(m => m.clase === 'Prueba');
+    if (D.missions[0]) D.missions[0].group = 'Pruebas y certámenes';
     window.addEventListener('hashchange', route);
     route();
   }

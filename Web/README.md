@@ -1,11 +1,10 @@
-# HemaBlocks · versión web
+# HemaBlocks · versión web (solo pruebas y certámenes)
 
-Página estática (sin instalación) con las misiones, las 6 pruebas tipo certamen, los casos por pistas,
-el informe de frotis, el contador diferencial con células en 3D y la guía de LMA M0–M7.
+Página estática con las 6 evaluaciones de la app: Pruebas 1 a 4, Certamen modelo y Certamen final.
+Cada intento sortea preguntas, entrega nota (escala chilena, 60 % = 4,0) y explica cada error.
 
 - Funciona en Chrome/Safari de tablets y celulares (Galaxy Tab S6 Lite, iPad mini con iOS 12.5 o más nuevo).
-- El 3D usa Three.js desde cdnjs; sin conexión o sin WebGL, el resto sigue funcionando.
 - El progreso se guarda en el navegador de cada aparato (localStorage).
-- Los datos salen de la app de Apple TV (`data/*.json`), exportados desde los archivos de contenido en Swift.
+- Solo usa `data/missions.json` y `data/exams.json`; el resto de la carpeta `data/`, `lab.js` y `frotis/` ya no se cargan y puedes no subirlos.
 
-Para probar en el computador: `python3 -m http.server 8765` dentro de esta carpeta y abrir http://localhost:8765/
+Para probar: `python3 -m http.server 8765` dentro de esta carpeta y abrir http://localhost:8765/
